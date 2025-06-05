@@ -199,7 +199,14 @@ body {
     @apply flex flex-wrap gap-4 w-full max-md:justify-center;
   }
   .companion-card {
-    @apply flex flex-col rounded-4xl border border-black px-4 py-4 gap-5 w-full min-lg:max-w-[410px] justify-between;
+    @apply flex flex-col rounded-4xl border border-black px-4 py-4 gap-5 w-full justify-between;
+    max-width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .companion-card {
+      max-width: 410px;
+    }
   }
   .subject-badge {
     @apply bg-black text-white rounded-4xl text-sm px-2 py-1 capitalize;
@@ -220,7 +227,8 @@ body {
     @apply bg-cta-gold rounded-4xl px-3 py-1.5 text-black;
   }
   .btn-primary {
-    @apply bg-primary text-white rounded-xl cursor-pointer px-4 py-2 flex items-center gap-2;
+    @apply text-white rounded-xl cursor-pointer px-4 py-2 flex items-center gap-2;
+    background-color: var(--primary);
   }
   .navbar {
     @apply flex items-center justify-between mx-auto w-full px-14 py-4 bg-white max-sm:px-4;
@@ -275,6 +283,10 @@ body {
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .rounded-4xl {
+    border-radius: 2rem;
   }
 }
 

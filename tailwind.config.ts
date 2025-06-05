@@ -8,6 +8,9 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens: {
+      'min-lg': '1024px',
+    },
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',
@@ -54,7 +57,8 @@ export default {
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			sm: 'calc(var(--radius) - 4px)',
+  			'4xl': '2rem'  // Adding custom 4xl border radius
   		}
   	}
   },
