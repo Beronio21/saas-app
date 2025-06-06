@@ -288,6 +288,14 @@ body {
   .rounded-4xl {
     border-radius: 2rem;
   }
+
+  .bg-cta {
+    background-color: #2c2c2c;
+  }
+
+  .bg-cta-gold {
+    background-color: #fccc41;
+  }
 }
 
 
