@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server"
 import { createSupabaseClient } from "../supabase";
+import { Columns } from "lucide-react";
 
 export const createCompanion = async (formData: CreateCompanion) => {
     const { userId: author } = await auth();
@@ -41,3 +42,16 @@ export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }:
         return companions;
 
 }
+
+export const getCompanion = async (id: string) => {
+    const supabase = createSupabaseClient();
+
+    const { data, error } = await supabase
+        .from('companions')
+        .select()
+        .eq('id', id);
+
+    if(error) return console.error(error);
+
+    return [0];
+}   
