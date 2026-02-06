@@ -35,11 +35,11 @@ const CompanionList = ({ title, companions, classNames } : CompanionListProps) =
                     {companions.map(({ id, subject, name, topic, duration }) => (
                         <TableRow key={id}>
                             <TableCell>
-                                <Link href={`/companion/${id}`}>
+                                <Link href={`/companions/${id}`}>
                                     <div className="flex items-center gap-2">
-                                        <div className="size-[72px] flex itmes-center justify-center rounded-lg max-md:hidden 
-                                        style={{ backgroundColor: getSubjectColor(subject) }}">
-                                            <Image 
+                                        <div className="size-[72px] flex itmes-center justify-center rounded-lg max-md:hidden"
+                                        style={{ backgroundColor: getSubjectColor(subject) }}>
+                                            <Image
                                                 src={`/icons/${subject}.svg`} 
                                                 alt={subject} 
                                                 width={35} 
