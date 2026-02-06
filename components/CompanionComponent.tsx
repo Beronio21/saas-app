@@ -23,6 +23,15 @@ const CompanionComponent = ({ companionId, subject, topic, name, userName, userI
     const [isMounted, setIsMounted] = useState(false);
 
     const lottieRef = useRef<LottieRefCurrentProps>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -43,13 +52,18 @@ const CompanionComponent = ({ companionId, subject, topic, name, userName, userI
 
         const onCallEnd = () => {
             setCallStatus(CallStatus.FINISHED);
-            addToSessionHistory(companionId)
+                addToSessionHistory(companionId)
         }
 
         const onMessage = (message: Message) => {
             if(message.type === 'transcript' && message.transcriptType === 'final') {
                 const newMessage= { role: message.role, content: message.transcript}
-                setMessages((prev) => [newMessage, ...prev])
+                console.log('New message received:', newMessage);
+                setMessages((prev) => {
+                    const updated = [...prev, newMessage];
+                    console.log('Updated messages:', updated);
+                    return updated;
+                });
             }
         }
 
@@ -108,7 +122,7 @@ const CompanionComponent = ({ companionId, subject, topic, name, userName, userI
     }
 
     return (
-        <section className="flex flex-col h-[70vh]">
+        <section className="flex flex-col min-h-[85vh] h-auto">
             <section className="flex gap-8 max-sm:flex-col">
                 <div className="companion-section">
                     <div className="companion-avatar" style={{ backgroundColor: getSubjectColor(subject)}}>
@@ -157,25 +171,39 @@ const CompanionComponent = ({ companionId, subject, topic, name, userName, userI
                 </div>
             </section>
 
-            <section className="transcript">
+            <section className="transcript flex-1 min-h-[400px]">
                 <div className="transcript-message no-scrollbar">
-                    {messages.map((message, index) => {
-                        if(message.role === 'assistant') {
-                            return (
-                                <p key={index} className="max-sm:text-sm">
-                                    {
-                                        name
-                                            .split(' ')[0]
-                                            .replace('/[.,]/g, ','')
-                                    }: {message.content}
-                                </p>
-                            )
-                        } else {
-                            return <p key={index} className="text-primary max-sm:text-sm">
-                                {userName}: {message.content}
-                            </p>
-                        }
-                    })}
+                    {messages.length === 0 ? (
+                        <p className="text-center text-gray-500 italic">
+                            Conversation will appear here... Start a session to begin chatting!
+                        </p>
+                    ) : (
+                        <>
+                            <div className="text-xs text-gray-500 mb-2">
+                                {messages.length} message(s) in conversation
+                            </div>
+                            {messages.map((message, index) => {
+                                if(message.role === 'assistant') {
+                                    return (
+                                        <div key={index} className="max-sm:text-sm mb-4 p-3 bg-gray-50 rounded-lg">
+                                            <p className="font-semibold text-blue-600 mb-1">
+                                                {name.split(' ')[0].replace(/[.,]/g, '')}:
+                                            </p>
+                                            <p>{message.content}</p>
+                                        </div>
+                                    )
+                                } else {
+                                    return (
+                                        <div key={index} className="text-primary max-sm:text-sm mb-4 p-3 bg-blue-50 rounded-lg">
+                                            <p className="font-semibold text-primary mb-1">{userName}:</p>
+                                            <p>{message.content}</p>
+                                        </div>
+                                    )
+                                }
+                            })}
+                        </>
+                    )}
+                    <div ref={messagesEndRef} className="h-20 mb-8" />
                 </div>
 
                 <div className="transcript-fade" />
