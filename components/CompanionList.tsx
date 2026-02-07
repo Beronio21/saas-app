@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import Link from 'next/link';
 import Image from 'next/image';
+import { Companion } from "@/types";
 import {
     Table,
     TableBody,
@@ -32,8 +33,8 @@ const CompanionList = ({ title, companions, classNames } : CompanionListProps) =
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {companions.map(({ id, subject, name, topic, duration }) => (
-                        <TableRow key={id}>
+                    {companions.map(({ id, subject, name, topic, duration }, index) => (
+                        <TableRow key={`${id}-${index}`}>
                             <TableCell>
                                 <Link href={`/companions/${id}`}>
                                     <div className="flex items-center gap-2">

@@ -81,11 +81,24 @@ export const getRecentSessions = async (limit = 10) => {
         .from('session_history')
         .select(`companions:companion_id (*)`)
         .order('created_at', { ascending: false })
-        .limit(limit)
 
     if(error) throw new Error(error.message);
 
-    return data.map(({ companions }) => companions);
+    // Extract companions and filter out null values
+    const companions = data
+        .map(({ companions }) => companions)
+        .filter(companion => companion && companion.id);
+
+    // Remove duplicates based on ID using Map for better performance
+    const uniqueCompanionsMap = new Map();
+    companions.forEach(companion => {
+        if (!uniqueCompanionsMap.has(companion.id)) {
+            uniqueCompanionsMap.set(companion.id, companion);
+        }
+    });
+
+    // Convert back to array and return only the requested limit
+    return Array.from(uniqueCompanionsMap.values()).slice(0, limit);
 }
 
 export const getUserSessions = async (userId: string, limit = 10) => {
@@ -154,6 +167,11 @@ export const addBookmark = async (companionId: string, path: string) => {
         user_id: userId,
     });
     if (error) {
+        // If the bookmarks table doesn't exist, silently fail
+        if (error.message.includes("Could not find the table") || error.code === "42P01") {
+            console.warn("Bookmarks table not found, bookmark not added");
+            return null;
+        }
         throw new Error(error.message);
     }
     // Revalidate the path to force a re-render of the page
@@ -172,6 +190,11 @@ export const removeBookmark = async (companionId: string, path: string) => {
         .eq("companion_id", companionId)
         .eq("user_id", userId);
     if (error) {
+        // If the bookmarks table doesn't exist, silently fail
+        if (error.message.includes("Could not find the table") || error.code === "42P01") {
+            console.warn("Bookmarks table not found, bookmark not removed");
+            return null;
+        }
         throw new Error(error.message);
     }
     revalidatePath(path);
@@ -186,8 +209,13 @@ export const getBookmarkedCompanions = async (userId: string) => {
         .select(`companions:companion_id (*)`) // Notice the (*) to get all the companion data
         .eq("user_id", userId);
     if (error) {
+        // If the bookmarks table doesn't exist, return an empty array
+        if (error.message.includes("Could not find the table") || error.code === "42P01") {
+            console.warn("Bookmarks table not found, returning empty bookmarks array");
+            return [];
+        }
         throw new Error(error.message);
     }
     // We don't need the bookmarks data, so we return only the companions
-    return data.map(({ companions }) => companions);
+    return data?.map(({ companions }) => companions) || [];
 };
